@@ -1,6 +1,6 @@
 $(function() {
   
-	var socket = new io.Socket("localhost"); 
+	var socket = new io.Socket("tracker.webbyapp.com"); 
 	var uid = null;
     socket.connect();
     socket.on('connect', function(){
