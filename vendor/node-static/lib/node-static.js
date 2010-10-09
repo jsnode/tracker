@@ -236,7 +236,7 @@ this.Server.prototype.stream = function (pathname, files, buffer, res, callback)
                 mode: 0666,
                 bufferSize: 4096
             }).addListener('data', function (chunk) {
-                chunk.copy (buffer, offset, 0);
+                buffer.write(chunk, offset, 'binary');
                 res.write  (chunk, 'binary');
                 offset   += chunk.length;
             }).addListener('close', function () {
