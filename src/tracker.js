@@ -1,8 +1,9 @@
 var http = require('http'),
     sys  = require('sys'),
     static = require('node-static/lib/node-static'),
-    io = require('socket.io');
+    io = require('socket.io'),
     url = require('url');
+    
 
 
 function Tracker(options) {
@@ -67,25 +68,30 @@ Tracker.prototype.listen  = function() {
   var socket = self.socket;
   var buffer = [];
   socket.on('connection', function(client){ 
-    client.send({ buffer: buffer });
     client.broadcast({ announcement: client.sessionId + ' connected' });
     client.on('message', function(message){
       console.log("MESSAGE: " + JSON.stringify(message));
+        var event = new Event(message);
+
+        event.save(function(err) {
+          console.log("ERROR SAVING EVENT: " + JSON.stringify(err));
+        });
+        
        if ('connect' in message) {
          console.log("Received connect message");
-         client.send({uid: "1234567890"});
-       }
+         // Temporarily generate random numbers for session ids.
+         client.send({session_id: Math.floor(Math.random()*99999)});
+       }       
        if ('mousemove' in message ) {
-         console.log("Received move message");
-         console.log("client: " + client.sessionId);
-         console.log("uid: " + message.mousemove.uid);
-         console.log("loc: " + message.mousemove.loc);
-         console.log("at: " +  message.mousemove.at);
-         console.log("px: " + message.mousemove.px);
-         console.log("py: " + message.mousemove.py);
-         console.log("tgn: " + message.mousemove.tgn);
-         console.log("tid: " + message.mousemove.tgid);
-         console.log("wch: " + message.mousemove.wch);
+         console.log("Received move message");         
+         console.log("client_id: "  + client.sessionId);
+         console.log("session_id: " + message.session_id);
+         console.log("url: "        + message.url);
+         console.log("at: "         + message.at);
+         console.log("page_x: "     + message.page_x);
+         console.log("page_y: "     + message.page_y);
+         console.log("node_name: "  + message.node_name);
+         console.log("node_id: "    + message.mousemove.node_id);
          client.broadcast(message);
          
        }

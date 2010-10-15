@@ -8,42 +8,32 @@ $(function() {
     }) 
     socket.on('message', function(message){      
       console.log("MESSAGE: " + message);
-       if ('uid' in message ) {
-        uid = message.uid; 
-        console.log("uid: " + uid);
+       if ('session_id' in message ) {
+        session_id = message.session_id; 
+        console.log("session_id: " + session_id);
        }
        if ('mousemove' in message ) {
         $('#cursor').css( { 
                  position: 'absolute',
                  zIndex: 5000,
-                 left: message.mousemove.px, 
-                 top: message.mousemove.py 
-        } );                 
+                 left: message.page_x, 
+                 top: message.page_y 
+        });                 
                  
-        console.log("px: " + message.mousemove.px);
-        console.log("py: " + message.mousemove.py);
+        console.log("page_x: " + message.page_x);
+        console.log("page_y: " + message.page_y);
        }
        
-    }) 
-    
+    });
+             
 	$("*").mousemove(function(e) {
-	    socket.send({mousemove: { loc: window.location.href,
-	                 uid: uid,
-    							 at: new Date(),
-    							 px: e.pageX, 
-    							 py: e.pageY,
-    							 tgn: e.target.nodeName,
-    							 tgid: e.target.id,
-							     }});
-	});
-	$("*").click(function(e) {
-		  socket.send({click: { loc: window.location.href,
-		    	         uid: uid,
-            			 at: new Date(),
-            			 px: e.pageX, 
-            			 py: e.pageY,
-            			 tgn: e.target.nodeName,
-            			 tgid: e.target.id,
-  							   }});
-    });	
+    socket.send({ type:      "mousemove"
+                , url:       window.location.href
+  							, at:        new Date()
+  							, page_x:    e.pageX 
+  							, page_y:    e.pageY
+  							, node_name: e.target.nodeName
+  							, node_id:   e.target.id
+    }});
+  });
 });
